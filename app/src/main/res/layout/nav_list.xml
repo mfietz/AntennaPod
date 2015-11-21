@@ -52,11 +52,59 @@
     </LinearLayout>
 
     <View
-        android:id="@+id/divider"
+        android:id="@+id/divider1"
         android:layout_width="@dimen/drawer_width"
         android:layout_height="1dp"
         android:layout_centerVertical="true"
         android:layout_above="@id/nav_settings"
+        android:background="?android:attr/listDivider"
+        tools:background="@android:color/holo_red_dark" />
+
+    <LinearLayout
+        android:id="@+id/logging"
+        android:layout_width="@dimen/drawer_width"
+        android:layout_height="@dimen/listitem_iconwithtext_height"
+        android:layout_above="@id/divider1"
+        android:background="?attr/selectableItemBackground"
+        android:contentDescription="@string/settings_label"
+        android:orientation="horizontal">
+
+        <com.joanzapata.iconify.widget.IconTextView
+            android:id="@+id/itvLogging"
+            android:layout_width="@dimen/thumbnail_length_navlist"
+            android:layout_height="@dimen/thumbnail_length_navlist"
+            android:layout_alignParentLeft="true"
+            android:gravity="center"
+            android:layout_marginBottom="4dp"
+            android:layout_marginLeft="@dimen/listitem_icon_leftpadding"
+            android:layout_marginTop="4dp"
+            android:padding="8dp"
+            android:text="{fa-play}"
+            android:textSize="18sp"
+            tools:src="@android:drawable/sym_def_app_icon"
+            tools:background="@android:color/holo_orange_dark" />
+
+        <TextView
+            android:id="@+id/txtvLogging"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="16dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text="@string/start_logging_label"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="@dimen/text_size_navdrawer"
+            tools:background="@android:color/holo_green_light"/>
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/divider2"
+        android:layout_width="@dimen/drawer_width"
+        android:layout_height="1dp"
+        android:layout_centerVertical="true"
+        android:layout_above="@id/logging"
         android:background="?android:attr/listDivider"
         tools:background="@android:color/holo_red_dark" />
 
@@ -65,7 +113,7 @@
         android:layout_width="@dimen/drawer_width"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:layout_above="@id/divider"
+        android:layout_above="@id/divider2"
         android:layout_alignParentTop="true"
         android:choiceMode="singleChoice"
         android:clipToPadding="false"

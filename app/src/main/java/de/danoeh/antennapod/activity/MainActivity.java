@@ -27,8 +27,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.joanzapata.iconify.Iconify;
+import com.joanzapata.iconify.widget.IconTextView;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.Validate;
@@ -49,6 +52,7 @@ import de.danoeh.antennapod.core.service.playback.PlaybackService;
 import de.danoeh.antennapod.core.service.playback.PlayerStatus;
 import de.danoeh.antennapod.core.storage.DBReader;
 import de.danoeh.antennapod.core.storage.DBWriter;
+import de.danoeh.antennapod.core.util.LogUtils;
 import de.danoeh.antennapod.core.util.StorageUtils;
 import de.danoeh.antennapod.core.util.playback.Playable;
 import de.danoeh.antennapod.core.util.playback.PlaybackController;
@@ -171,6 +175,21 @@ public class MainActivity extends AppCompatActivity implements NavDrawerActivity
         findViewById(R.id.nav_settings).setOnClickListener(v -> {
             drawerLayout.closeDrawer(navDrawer);
             startActivity(new Intent(MainActivity.this, PreferenceController.getPreferenceActivity()));
+        });
+        IconTextView itvLogging = (IconTextView) findViewById(R.id.itvLogging);
+        TextView txtvLogging = (TextView) findViewById(R.id.txtvLogging);
+        findViewById(R.id.logging).setOnClickListener(v -> {
+            if(!LogUtils.isLogging()) {
+                LogUtils.startLogging();
+                itvLogging.setText("{fa-stop}");
+                Iconify.addIcons(itvLogging);
+                txtvLogging.setText(R.string.stop_logging_label);
+            } else {
+                LogUtils.stopLogging(this);
+                itvLogging.setText("{fa-play}");
+                Iconify.addIcons(itvLogging);
+                txtvLogging.setText(R.string.start_logging_label);
+            }
         });
 
         FragmentTransaction transaction = fm.beginTransaction();

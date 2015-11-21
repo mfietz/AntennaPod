@@ -26,6 +26,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.viewpagerindicator.CirclePageIndicator;
+import com.joanzapata.iconify.Iconify;
+import com.joanzapata.iconify.widget.IconTextView;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -44,6 +46,7 @@ import de.danoeh.antennapod.core.service.playback.PlaybackService;
 import de.danoeh.antennapod.core.service.playback.PlayerStatus;
 import de.danoeh.antennapod.core.storage.DBReader;
 import de.danoeh.antennapod.core.storage.DBWriter;
+import de.danoeh.antennapod.core.util.LogUtils;
 import de.danoeh.antennapod.core.util.playback.ExternalMedia;
 import de.danoeh.antennapod.core.util.playback.Playable;
 import de.danoeh.antennapod.core.util.playback.PlaybackController;
@@ -255,6 +258,18 @@ public class AudioplayerActivity extends MediaplayerActivity implements NavDrawe
         findViewById(R.id.nav_settings).setOnClickListener(v -> {
             drawerLayout.closeDrawer(navDrawer);
             startActivity(new Intent(AudioplayerActivity.this, PreferenceController.getPreferenceActivity()));
+        });
+        IconTextView itvLogging = (IconTextView) findViewById(R.id.itvLogging);
+        findViewById(R.id.logging).setOnClickListener(v -> {
+            if(!LogUtils.isLogging()) {
+                itvLogging.setText("{fa-stop}");
+                Iconify.addIcons(itvLogging);
+                LogUtils.startLogging();
+            } else {
+                itvLogging.setText("{fa-play}");
+                Iconify.addIcons(itvLogging);
+                LogUtils.stopLogging(this);
+            }
         });
 
         pager = (ViewPager) findViewById(R.id.pager);
