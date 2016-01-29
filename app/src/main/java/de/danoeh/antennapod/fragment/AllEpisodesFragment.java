@@ -62,6 +62,10 @@ public class AllEpisodesFragment extends Fragment {
 
     public static final String TAG = "AllEpisodesFragment";
 
+    public String TAG() {
+        return TAG;
+    }
+
     private static final int EVENTS = EventDistributor.FEED_LIST_UPDATE |
             EventDistributor.UNREAD_ITEMS_UPDATE |
             EventDistributor.PLAYER_STATUS_UPDATE;
@@ -266,7 +270,7 @@ public class AllEpisodesFragment extends Fragment {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        Log.d(TAG, "onContextItemSelected() called with: " + "item = [" + item + "]");
+        Log.d(TAG(), "onContextItemSelected() called with: " + "item = [" + item + "]");
         if(!isVisible()) {
             return false;
         }
@@ -280,7 +284,7 @@ public class AllEpisodesFragment extends Fragment {
         FeedItem selectedItem = itemAccess.getItem(pos);
 
         if (selectedItem == null) {
-            Log.i(TAG, "Selected item at position " + pos + " was null, ignoring selection");
+            Log.i(TAG(), "Selected item at position " + pos + " was null, ignoring selection");
             return super.onContextItemSelected(item);
         }
 
@@ -411,10 +415,15 @@ public class AllEpisodesFragment extends Fragment {
             }
             return favoritesIds;
         }
+
+        @Override
+        public String getCallerTag() {
+            return TAG();
+        }
     };
 
     public void onEventMainThread(FeedItemEvent event) {
-        Log.d(TAG, "onEventMainThread() called with: " + "event = [" + event + "]");
+        Log.d(TAG(), "onEventMainThread() called with: " + "event = [" + event + "]");
         if(episodes == null || listAdapter == null) {
             return;
         }
@@ -431,7 +440,7 @@ public class AllEpisodesFragment extends Fragment {
 
 
     public void onEventMainThread(DownloadEvent event) {
-        Log.d(TAG, "onEventMainThread() called with: " + "event = [" + event + "]");
+        Log.d(TAG(), "onEventMainThread() called with: " + "event = [" + event + "]");
         DownloaderUpdate update = event.update;
         downloaderList = update.downloaders;
         if (isUpdatingFeeds != update.feedIds.length > 0) {
@@ -484,7 +493,7 @@ public class AllEpisodesFragment extends Fragment {
                         }
                     }
                 }, error -> {
-                    Log.e(TAG, Log.getStackTraceString(error));
+                    Log.e(TAG(), Log.getStackTraceString(error));
                 });
     }
 

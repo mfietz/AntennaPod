@@ -285,8 +285,7 @@ public class PlaybackService extends Service {
                 handleKeycode(keycode);
             } else {
                 started = true;
-                boolean stream = intent.getBooleanExtra(EXTRA_SHOULD_STREAM,
-                        true);
+                boolean stream = intent.getBooleanExtra(EXTRA_SHOULD_STREAM, true);
                 boolean startWhenPrepared = intent.getBooleanExtra(EXTRA_START_WHEN_PREPARED, false);
                 boolean prepareImmediately = intent.getBooleanExtra(EXTRA_PREPARE_IMMEDIATELY, false);
                 sendNotificationBroadcast(NOTIFICATION_TYPE_RELOAD, 0);
@@ -578,8 +577,7 @@ public class PlaybackService extends Service {
                 isInQueue = QueueAccess.ItemListAccess(queue).contains(item.getId());
                 nextItem = DBTasks.getQueueSuccessorOfItem(item.getId(), queue);
             } catch (InterruptedException e) {
-                e.printStackTrace();
-                // isInQueue remains false
+                Log.e(TAG, Log.getStackTraceString(e));
             }
 
             boolean shouldKeep = wasSkipped && UserPreferences.shouldSkipKeepEpisode();
@@ -823,14 +821,13 @@ public class PlaybackService extends Service {
                 }
                 if (icon == null) {
                     icon = BitmapFactory.decodeResource(getApplicationContext().getResources(),
-                            ClientConfig.playbackServiceCallbacks.getNotificationIconResource(getApplicationContext()));
+                            R.drawable.ic_stat_antenna_default);
                 }
 
                 if (mediaPlayer == null) {
                     return;
                 }
                 PlayerStatus playerStatus = mediaPlayer.getPlayerStatus();
-                final int smallIcon = ClientConfig.playbackServiceCallbacks.getNotificationIconResource(getApplicationContext());
 
                 if (!Thread.currentThread().isInterrupted() && started && info.playable != null) {
                     String contentText = info.playable.getEpisodeTitle();
@@ -845,7 +842,7 @@ public class PlaybackService extends Service {
                             .setOngoing(false)
                             .setContentIntent(pIntent)
                             .setLargeIcon(icon)
-                            .setSmallIcon(smallIcon)
+                            .setSmallIcon(R.drawable.ic_stat_antenna_default)
                             .setWhen(0) // we don't need the time
                             .setPriority(UserPreferences.getNotifyPriority()); // set notification priority
                     IntList compactActionList = new IntList();

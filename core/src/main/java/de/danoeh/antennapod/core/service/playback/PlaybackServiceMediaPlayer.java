@@ -99,7 +99,7 @@ public class PlaybackServiceMediaPlayer implements SharedPreferences.OnSharedPre
         this.audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         this.playerLock = new ReentrantLock();
         this.startWhenPrepared = new AtomicBoolean(false);
-        executor = new ThreadPoolExecutor(1, 1, 5, TimeUnit.MINUTES, new LinkedBlockingDeque<Runnable>(),
+        executor = new ThreadPoolExecutor(1, 1, 5, TimeUnit.MINUTES, new LinkedBlockingDeque<>(),
                 new RejectedExecutionHandler() {
                     @Override
                     public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
@@ -173,7 +173,8 @@ public class PlaybackServiceMediaPlayer implements SharedPreferences.OnSharedPre
      *                           for playback immediately (see 'prepareImmediately' parameter for more details)
      * @param prepareImmediately Set to true if the method should also prepare the episode for playback.
      */
-    public void playMediaObject(@NonNull final Playable playable, final boolean stream, final boolean startWhenPrepared, final boolean prepareImmediately) {
+    public void playMediaObject(@NonNull final Playable playable, final boolean stream,
+                                final boolean startWhenPrepared, final boolean prepareImmediately) {
         Log.d(TAG, "playMediaObject(...)");
         executor.submit(new Runnable() {
             @Override
@@ -199,11 +200,12 @@ public class PlaybackServiceMediaPlayer implements SharedPreferences.OnSharedPre
      *
      * @see #playMediaObject(de.danoeh.antennapod.core.util.playback.Playable, boolean, boolean, boolean)
      */
-    private void playMediaObject(@NonNull final Playable playable, final boolean forceReset, final boolean stream, final boolean startWhenPrepared, final boolean prepareImmediately) {
+    private void playMediaObject(@NonNull final Playable playable, final boolean forceReset,
+                                 final boolean stream, final boolean startWhenPrepared,
+                                 final boolean prepareImmediately) {
         if (!playerLock.isHeldByCurrentThread()) {
             throw new IllegalStateException("method requires playerLock");
         }
-
 
         if (media != null) {
             if (!forceReset && media.getIdentifier().equals(playable.getIdentifier())
@@ -240,7 +242,6 @@ public class PlaybackServiceMediaPlayer implements SharedPreferences.OnSharedPre
                 setPlayerStatus(PlayerStatus.INDETERMINATE, null);
             }
         }
-
         this.media = playable;
         this.stream = stream;
         this.mediaType = media.getMediaType();

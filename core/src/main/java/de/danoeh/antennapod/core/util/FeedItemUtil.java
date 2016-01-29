@@ -61,7 +61,7 @@ public class FeedItemUtil {
         return result;
     }
 
-    public static boolean containsAnyId(List<FeedItem> items, long[] ids) {
+    public static boolean containsAnyId(List<FeedItem> items, long... ids) {
         if(items == null || items.size() == 0) {
             return false;
         }

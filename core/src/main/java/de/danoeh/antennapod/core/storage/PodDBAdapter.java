@@ -1482,29 +1482,19 @@ public class PodDBAdapter {
         return db.rawQuery(query, null);
     }
 
-
-    public static final int IDX_FEEDSTATISTICS_FEED = 0;
-    public static final int IDX_FEEDSTATISTICS_NUM_ITEMS = 1;
-    public static final int IDX_FEEDSTATISTICS_NEW_ITEMS = 2;
-    public static final int IDX_FEEDSTATISTICS_LATEST_EPISODE = 3;
-    public static final int IDX_FEEDSTATISTICS_IN_PROGRESS_EPISODES = 4;
-
-    /**
-     * Select number of items, new items, the date of the latest episode and the number of episodes in progress. The result
-     * is sorted by the title of the feed.
-     */
-    private static final String FEED_STATISTICS_QUERY = "SELECT Feeds.id, num_items, new_items, latest_episode, in_progress FROM " +
-            " Feeds LEFT JOIN " +
-            "(SELECT feed,count(*) AS num_items," +
-            " COUNT(CASE WHEN read=0 THEN 1 END) AS new_items," +
-            " MAX(pubDate) AS latest_episode," +
-            " COUNT(CASE WHEN position>0 THEN 1 END) AS in_progress," +
-            " COUNT(CASE WHEN downloaded=1 THEN 1 END) AS episodes_downloaded " +
-            " FROM FeedItems LEFT JOIN FeedMedia ON FeedItems.id=FeedMedia.feeditem GROUP BY FeedItems.feed)" +
-            " ON Feeds.id = feed ORDER BY Feeds.title COLLATE NOCASE ASC;";
-
     public Cursor getFeedStatisticsCursor() {
-        return db.rawQuery(FEED_STATISTICS_QUERY, null);
+        // Select number of items, new items, the date of the latest episode and the number of episodes in progress. The result
+        // is sorted by the title of the feed.
+        String query = "SELECT Feeds.id, num_items, new_items, latest_episode, in_progress FROM " +
+                " Feeds LEFT JOIN " +
+                "(SELECT feed,count(*) AS num_items," +
+                " COUNT(CASE WHEN read=0 THEN 1 END) AS new_items," +
+                " MAX(pubDate) AS latest_episode," +
+                " COUNT(CASE WHEN position>0 THEN 1 END) AS in_progress," +
+                " COUNT(CASE WHEN downloaded=1 THEN 1 END) AS episodes_downloaded " +
+                " FROM FeedItems LEFT JOIN FeedMedia ON FeedItems.id=FeedMedia.feeditem GROUP BY FeedItems.feed)" +
+                " ON Feeds.id = feed ORDER BY Feeds.title COLLATE NOCASE ASC;";
+        return db.rawQuery(query, null);
     }
 
     /**

@@ -31,6 +31,11 @@ public class NewEpisodesFragment extends AllEpisodesFragment {
 
     public static final String TAG = "NewEpisodesFragment";
 
+    @Override
+    public String TAG() {
+        return TAG;
+    }
+
     private static final String PREF_NAME = "PrefNewEpisodesFragment";
 
     @Override
@@ -40,7 +45,7 @@ public class NewEpisodesFragment extends AllEpisodesFragment {
     protected String getPrefName() { return PREF_NAME; }
 
     public void onEvent(QueueEvent event) {
-        Log.d(TAG, "onEvent() called with: " + "event = [" + event + "]");
+        Log.d(TAG(), "onEvent() called with: " + "event = [" + event + "]");
         loadItems();
     }
 
@@ -64,7 +69,7 @@ public class NewEpisodesFragment extends AllEpisodesFragment {
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 AllEpisodesRecycleAdapter.Holder holder = (AllEpisodesRecycleAdapter.Holder)viewHolder;
 
-                Log.d(TAG, "remove(" + holder.getItemId() + ")");
+                Log.d(TAG(), "remove(" + holder.getItemId() + ")");
                 if (subscription != null) {
                     subscription.unsubscribe();
                 }
