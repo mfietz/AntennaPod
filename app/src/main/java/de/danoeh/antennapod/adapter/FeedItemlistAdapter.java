@@ -214,7 +214,7 @@ public class FeedItemlistAdapter extends BaseAdapter {
         @Override
         public void onClick(View v) {
             FeedItem item = (FeedItem) v.getTag();
-            callback.onActionButtonPressed(item);
+            callback.onActionButtonPressed(String.valueOf(item.getFeed().getId()), item);
         }
     };
 

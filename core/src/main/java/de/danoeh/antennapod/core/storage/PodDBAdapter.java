@@ -1287,6 +1287,18 @@ public class PodDBAdapter {
         return db.rawQuery(query, null);
     }
 
+    public final Cursor getAllFeedItemSuccessorCursor(final long pubDate) {
+        String[] selectionArgs = { String.valueOf(pubDate) };
+        return db.query(TABLE_NAME_FEED_ITEMS, FEEDITEM_SEL_FI_SMALL, KEY_PUBDATE + "<?", selectionArgs,
+                null, null, KEY_PUBDATE + " DESC", "1");
+    }
+
+    public final Cursor getFeedItemSuccessorCursor(final long feedId, final long itemId) {
+        String[] selectionArgs = { String.valueOf(feedId), String.valueOf(itemId) };
+        return db.query(TABLE_NAME_FEED_ITEMS, FEEDITEM_SEL_FI_SMALL, KEY_FEED + "=? AND "
+                + KEY_ID + ">?", selectionArgs, null, null, null, "1");
+    }
+
     public Cursor getImageAuthenticationCursor(final String imageUrl) {
         String downloadUrl = DatabaseUtils.sqlEscapeString(imageUrl);
         final String query = ""

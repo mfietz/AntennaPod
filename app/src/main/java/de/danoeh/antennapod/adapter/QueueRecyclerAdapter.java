@@ -36,6 +36,7 @@ import de.danoeh.antennapod.activity.MainActivity;
 import de.danoeh.antennapod.core.feed.FeedItem;
 import de.danoeh.antennapod.core.feed.FeedMedia;
 import de.danoeh.antennapod.core.glide.ApGlideSettings;
+import de.danoeh.antennapod.core.preferences.PlaybackPreferences;
 import de.danoeh.antennapod.core.preferences.UserPreferences;
 import de.danoeh.antennapod.core.storage.DownloadRequester;
 import de.danoeh.antennapod.core.util.Converter;
@@ -339,7 +340,7 @@ public class QueueRecyclerAdapter extends RecyclerView.Adapter<QueueRecyclerAdap
         @Override
         public void onClick(View v) {
             FeedItem item = (FeedItem) v.getTag();
-            actionButtonCallback.onActionButtonPressed(item);
+            actionButtonCallback.onActionButtonPressed(PlaybackPreferences.LIST_QUEUE, item);
         }
     };
 

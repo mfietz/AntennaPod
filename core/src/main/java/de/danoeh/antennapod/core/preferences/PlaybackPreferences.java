@@ -50,6 +50,11 @@ public class PlaybackPreferences implements SharedPreferences.OnSharedPreference
     public static final String PREF_CURRENT_PLAYER_STATUS = "de.danoeh.antennapod.preferences.currentPlayerStatus";
 
     /**
+     * The current list which playback was initiated from
+     */
+    public static final String PREF_CURRENT_LIST = "de.danoeh.antennapod.preferences.currentList";
+
+    /**
      * Value of PREF_CURRENTLY_PLAYING_MEDIA if no media is playing.
      */
     public static final long NO_MEDIA_PLAYING = -1;
@@ -68,6 +73,10 @@ public class PlaybackPreferences implements SharedPreferences.OnSharedPreference
      * Value of PREF_CURRENT_PLAYER_STATUS if media player status is neither playing nor paused.
      */
     public static final int PLAYER_STATUS_OTHER = 3;
+
+    public static final String LIST_QUEUE = "QueueFragment";
+    public static final String LIST_FAVORITES = "FavoriteEpisodesFrag";
+    public static final String LIST_ALL = "AllEpisodesFragment";
 
     private static PlaybackPreferences instance;
     private static SharedPreferences prefs;
@@ -109,6 +118,14 @@ public class PlaybackPreferences implements SharedPreferences.OnSharedPreference
 
     public static int getCurrentPlayerStatus() {
         return prefs.getInt(PREF_CURRENT_PLAYER_STATUS, PLAYER_STATUS_OTHER);
+    }
+
+    public static void setCurrentList(final String list) {
+        prefs.edit().putString(PREF_CURRENT_LIST, list).apply();
+    }
+
+    public static String getCurrentList() {
+        return prefs.getString(PREF_CURRENT_LIST, null);
     }
 
 }

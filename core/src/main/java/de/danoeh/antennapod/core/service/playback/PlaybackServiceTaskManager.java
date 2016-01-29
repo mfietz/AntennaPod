@@ -6,14 +6,13 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
+import de.danoeh.antennapod.core.event.FavoritesEvent;
 import de.danoeh.antennapod.core.event.QueueEvent;
 import de.danoeh.antennapod.core.feed.FeedItem;
 import de.danoeh.antennapod.core.storage.DBReader;
@@ -49,6 +48,7 @@ public class PlaybackServiceTaskManager {
     private ScheduledFuture widgetUpdaterFuture;
     private ScheduledFuture sleepTimerFuture;
     private volatile Future<List<FeedItem>> queueFuture;
+    private volatile Future<List<FeedItem>> favoritesFuture;
     private volatile Future chapterLoaderFuture;
 
     private SleepTimer sleepTimer;
@@ -72,6 +72,7 @@ public class PlaybackServiceTaskManager {
             return t;
         });
         loadQueue();
+        loadFavorites();
         EventBus.getDefault().register(this);
     }
 
@@ -120,6 +121,39 @@ public class PlaybackServiceTaskManager {
     public synchronized List<FeedItem> getQueue() throws InterruptedException {
         try {
             return queueFuture.get();
+        } catch (ExecutionException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    public void onEvent(FavoritesEvent event) {
+        Log.d(TAG, "onEvent(FavoritesEvent " + event +")");
+        cancelFavoritesLoader();
+        loadFavorites();
+    }
+
+    private synchronized boolean isFavoritesLoaderActive() {
+        return favoritesFuture != null && !favoritesFuture.isCancelled() && !favoritesFuture.isDone();
+    }
+
+    private synchronized void cancelFavoritesLoader() {
+        if (isFavoritesLoaderActive()) {
+            favoritesFuture.cancel(true);
+        }
+    }
+
+    private synchronized void loadFavorites() {
+        if (!isFavoritesLoaderActive()) {
+            favoritesFuture = schedExecutor.submit(() -> DBReader.getFavoriteItemsList());
+        }
+    }
+
+    /**
+     * Returns the favorites or waits until the PSTM has loaded the favorites from the database.
+     */
+    public synchronized List<FeedItem> getFavorites() throws InterruptedException {
+        try {
+            return favoritesFuture.get();
         } catch (ExecutionException e) {
             throw new IllegalArgumentException(e);
         }
@@ -283,6 +317,7 @@ public class PlaybackServiceTaskManager {
         cancelWidgetUpdater();
         disableSleepTimer();
         cancelQueueLoader();
+        cancelFavoritesLoader();
         cancelChapterLoader();
     }
 

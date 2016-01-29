@@ -44,10 +44,11 @@ import de.danoeh.antennapod.core.preferences.GpodnetPreferences;
 import de.danoeh.antennapod.core.preferences.PlaybackPreferences;
 import de.danoeh.antennapod.core.preferences.UserPreferences;
 import de.danoeh.antennapod.core.receiver.MediaButtonReceiver;
+import de.danoeh.antennapod.core.storage.DBReader;
 import de.danoeh.antennapod.core.storage.DBTasks;
 import de.danoeh.antennapod.core.storage.DBWriter;
+import de.danoeh.antennapod.core.util.FeedItemUtil;
 import de.danoeh.antennapod.core.util.IntList;
-import de.danoeh.antennapod.core.util.QueueAccess;
 import de.danoeh.antennapod.core.util.flattr.FlattrUtils;
 import de.danoeh.antennapod.core.util.playback.Playable;
 
@@ -66,6 +67,12 @@ public class PlaybackService extends Service {
      * Parcelable of type Playable.
      */
     public static final String EXTRA_PLAYABLE = "PlaybackService.PlayableExtra";
+
+    /**
+     * Contains a string representing where playback was initiated from
+     */
+    public static final String EXTRA_CALLER = "PlaybackService.CallerExtra";
+
     /**
      * True if media should be streamed.
      */
@@ -285,6 +292,8 @@ public class PlaybackService extends Service {
                 handleKeycode(keycode);
             } else {
                 started = true;
+                String caller = intent.getStringExtra(EXTRA_CALLER);
+                PlaybackPreferences.setCurrentList(caller);
                 boolean stream = intent.getBooleanExtra(EXTRA_SHOULD_STREAM, true);
                 boolean startWhenPrepared = intent.getBooleanExtra(EXTRA_START_WHEN_PREPARED, false);
                 boolean prepareImmediately = intent.getBooleanExtra(EXTRA_PREPARE_IMMEDIATELY, false);
@@ -572,10 +581,28 @@ public class PlaybackService extends Service {
             FeedMedia media = (FeedMedia) playable;
             FeedItem item = media.getItem();
 
+            String currentList = PlaybackPreferences.getCurrentList();
             try {
-                final List<FeedItem> queue = taskManager.getQueue();
-                isInQueue = QueueAccess.ItemListAccess(queue).contains(item.getId());
-                nextItem = DBTasks.getQueueSuccessorOfItem(item.getId(), queue);
+                if(PlaybackPreferences.LIST_QUEUE.equals(currentList)) {
+                    final List<FeedItem> queue = taskManager.getQueue();
+                    int pos = FeedItemUtil.indexOfItemWithId(queue, item.getId());
+                    if(pos >= 0) {
+                        isInQueue = true;
+                        if(pos + 1 < queue.size()) {
+                            nextItem = queue.get(pos + 1);
+                        }
+                    }
+                } else if(PlaybackPreferences.LIST_FAVORITES.equals(currentList)) {
+                    final List<FeedItem> favorites = taskManager.getFavorites();
+                    int pos = FeedItemUtil.indexOfItemWithId(favorites, item.getId());
+                    if(0 <= pos && pos + 1 < favorites.size()) {
+                        nextItem = favorites.get(pos + 1);
+                    }
+                } else if(PlaybackPreferences.LIST_ALL.equals(currentList)) {
+                    nextItem = DBReader.getAllFeedItemsSuccessor(item);
+                } else if(currentList != null && TextUtils.isDigitsOnly(currentList)) {
+                    nextItem = DBReader.getFeedItemSuccessor(item);
+                }
             } catch (InterruptedException e) {
                 Log.e(TAG, Log.getStackTraceString(e));
             }
@@ -617,19 +644,13 @@ public class PlaybackService extends Service {
             }
         }
 
-        // Load next episode if previous episode was in the queue and if there
-        // is an episode in the queue left.
+        // Load next episode if it has a successor in the list playback was initiated from
         // Start playback immediately if continuous playback is enabled
         Playable nextMedia = null;
-        boolean loadNextItem = ClientConfig.playbackServiceCallbacks.useQueue() &&
-                isInQueue &&
-                nextItem != null;
 
-        playNextEpisode = playNextEpisode &&
-                loadNextItem &&
-                UserPreferences.isFollowQueue();
+        playNextEpisode = playNextEpisode && nextItem != null && UserPreferences.isContinuousPlayback();
 
-        if (loadNextItem) {
+        if (nextItem != null) {
             Log.d(TAG, "Loading next item in queue");
             nextMedia = nextItem.getMedia();
         }
@@ -882,7 +903,7 @@ public class PlaybackService extends Service {
                             ffButtonPendingIntent);
                     numActions++;
 
-                    if (UserPreferences.isFollowQueue()) {
+                    if (UserPreferences.isContinuousPlayback()) {
                         PendingIntent skipButtonPendingIntent = getPendingIntentForMediaAction(
                                 KeyEvent.KEYCODE_MEDIA_NEXT, numActions);
                         notificationBuilder.addAction(android.R.drawable.ic_media_next,

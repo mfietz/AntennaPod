@@ -110,7 +110,7 @@ public final class DBTasks {
      *                          found, the PlaybackService will shutdown and the database entry of the FeedMedia object will be
      *                          corrected.
      */
-    public static void playMedia(final Context context, final FeedMedia media,
+    public static void playMedia(final Context context, final String caller, final FeedMedia media,
                                  boolean showPlayer, boolean startWhenPrepared, boolean shouldStream) {
         try {
             if (!shouldStream) {
@@ -122,6 +122,7 @@ public final class DBTasks {
             }
             // Start playback Service
             Intent launchIntent = new Intent(context, PlaybackService.class);
+            launchIntent.putExtra(PlaybackService.EXTRA_CALLER, caller);
             launchIntent.putExtra(PlaybackService.EXTRA_PLAYABLE, media);
             launchIntent.putExtra(PlaybackService.EXTRA_START_WHEN_PREPARED,
                     startWhenPrepared);
@@ -135,7 +136,6 @@ public final class DBTasks {
                 context.startActivity(PlaybackService.getPlayerActivityIntent(
                         context, media));
             }
-            DBWriter.addQueueItemAt(context, media.getItem().getId(), 0, false);
         } catch (MediaFileNotFoundException e) {
             e.printStackTrace();
             if (media.isPlaying()) {

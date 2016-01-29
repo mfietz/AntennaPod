@@ -131,11 +131,11 @@ public class PreferencesTest extends ActivityInstrumentationTestCase2<Preference
     }
 
     public void testContinuousPlayback() {
-        final boolean continuousPlayback = UserPreferences.isFollowQueue();
+        final boolean continuousPlayback = UserPreferences.isContinuousPlayback();
         solo.clickOnText(solo.getString(R.string.pref_followQueue_title));
-        assertTrue(solo.waitForCondition(() -> continuousPlayback != UserPreferences.isFollowQueue(), Timeout.getLargeTimeout()));
+        assertTrue(solo.waitForCondition(() -> continuousPlayback != UserPreferences.isContinuousPlayback(), Timeout.getLargeTimeout()));
         solo.clickOnText(solo.getString(R.string.pref_followQueue_title));
-        assertTrue(solo.waitForCondition(() -> continuousPlayback == UserPreferences.isFollowQueue(), Timeout.getLargeTimeout()));
+        assertTrue(solo.waitForCondition(() -> continuousPlayback == UserPreferences.isContinuousPlayback(), Timeout.getLargeTimeout()));
     }
 
     public void testAutoDelete() {

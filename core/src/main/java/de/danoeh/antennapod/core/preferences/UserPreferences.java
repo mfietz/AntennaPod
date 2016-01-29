@@ -232,7 +232,7 @@ public class UserPreferences {
     }
 
 
-    public static boolean isFollowQueue() {
+    public static boolean isContinuousPlayback() {
         return prefs.getBoolean(PREF_FOLLOW_QUEUE, true);
     }
 

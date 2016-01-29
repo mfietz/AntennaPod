@@ -177,7 +177,7 @@ public class ItemFragment extends Fragment {
                 return;
             }
             DefaultActionButtonCallback actionButtonCallback = new DefaultActionButtonCallback(getActivity());
-            actionButtonCallback.onActionButtonPressed(item);
+            actionButtonCallback.onActionButtonPressed(null, item);
             FeedMedia media = item.getMedia();
             if (media != null && media.isDownloaded()) {
                 // playback was started, dialog should close itself
@@ -189,11 +189,10 @@ public class ItemFragment extends Fragment {
             if (item == null) {
                 return;
             }
-
             if (item.hasMedia()) {
                 FeedMedia media = item.getMedia();
                 if (!media.isDownloaded()) {
-                    DBTasks.playMedia(getActivity(), media, true, true, true);
+                    DBTasks.playMedia(getActivity(), null, media, true, true, true);
                     ((MainActivity) getActivity()).dismissChildFragment();
                 } else {
                     DBWriter.deleteFeedMediaOfItem(getActivity(), media.getId());

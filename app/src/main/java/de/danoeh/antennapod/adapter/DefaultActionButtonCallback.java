@@ -51,8 +51,7 @@ public class DefaultActionButtonCallback implements ActionButtonCallback {
     }
 
     @Override
-    public void onActionButtonPressed(final FeedItem item) {
-
+    public void onActionButtonPressed(final String caller, final FeedItem item) {
         if (item.hasMedia()) {
             final FeedMedia media = item.getMedia();
             boolean isDownloading = DownloadRequester.getInstance().isDownloadingFile(media);
@@ -88,7 +87,7 @@ public class DefaultActionButtonCallback implements ActionButtonCallback {
                     context.sendBroadcast(new Intent(PlaybackService.ACTION_RESUME_PLAY_CURRENT_EPISODE));
                 }
                 else {
-                    DBTasks.playMedia(context, media, false, true, false);
+                    DBTasks.playMedia(context, caller, media, false, true, false);
                 }
             }
         } else {

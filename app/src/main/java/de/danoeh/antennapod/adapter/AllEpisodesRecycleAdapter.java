@@ -261,7 +261,7 @@ public class AllEpisodesRecycleAdapter extends RecyclerView.Adapter<AllEpisodesR
         @Override
         public void onClick(View v) {
             FeedItem item = (FeedItem) v.getTag();
-            actionButtonCallback.onActionButtonPressed(item);
+            actionButtonCallback.onActionButtonPressed(itemAccess.getCallerTag(), item);
         }
     };
 
@@ -348,6 +348,8 @@ public class AllEpisodesRecycleAdapter extends RecyclerView.Adapter<AllEpisodesR
         LongList getQueueIds();
 
         LongList getFavoritesIds();
+
+        String getCallerTag();
 
     }
 

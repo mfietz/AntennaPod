@@ -1,6 +1,7 @@
 package de.danoeh.antennapod.core.storage;
 
 import android.database.Cursor;
+import android.support.annotation.Nullable;
 import android.support.v4.util.ArrayMap;
 import android.util.Log;
 
@@ -282,8 +283,7 @@ public final class DBReader {
      * Loads the IDs of the FeedItems in the queue. This method should be preferred over
      * {@link #getQueue()} if the FeedItems of the queue are not needed.
      *
-     * @return A list of IDs sorted by the same order as the queue. The caller can wrap the returned
-     * list in a {@link de.danoeh.antennapod.core.util.QueueAccess} object for easier access to the queue's properties.
+     * @return A list of IDs sorted by the same order as the queue.
      */
     public static LongList getQueueIDList() {
         Log.d(TAG, "getQueueIDList() called");
@@ -311,8 +311,7 @@ public final class DBReader {
      * Loads a list of the FeedItems in the queue. If the FeedItems of the queue are not used directly, consider using
      * {@link #getQueueIDList()} instead.
      *
-     * @return A list of FeedItems sorted by the same order as the queue. The caller can wrap the returned
-     * list in a {@link de.danoeh.antennapod.core.util.QueueAccess} object for easier access to the queue's properties.
+     * @return A list of FeedItems sorted by the same order as the queue.
      */
     public static List<FeedItem> getQueue() {
         Log.d(TAG, "getQueue() called with: " + "");
@@ -684,6 +683,46 @@ public final class DBReader {
         return items;
     }
 
+    @Nullable
+    public static FeedItem getAllFeedItemsSuccessor(FeedItem item) {
+        PodDBAdapter adapter = PodDBAdapter.getInstance();
+        adapter.open();
+        FeedItem successor = null;
+        Cursor c = adapter.getAllFeedItemSuccessorCursor(item.getPubDate().getTime());
+        if (c.moveToFirst()) {
+            List<FeedItem> list = extractItemlistFromCursor(adapter, c);
+            if (list.size() > 0) {
+                successor = list.get(0);
+                loadAdditionalFeedItemListData(list);
+                if (item.hasChapters()) {
+                    loadChaptersOfFeedItem(adapter, item);
+                }
+            }
+        }
+        c.close();
+        adapter.close();
+        return successor;
+    }
+
+    @Nullable
+    public static FeedItem getFeedItemSuccessor(FeedItem item) {
+        PodDBAdapter adapter = PodDBAdapter.getInstance();
+        adapter.open();
+        FeedItem successor = null;
+        Cursor c = adapter.getFeedItemSuccessorCursor(item.getFeed().getId(), item.getId());
+        if (c.moveToFirst()) {
+            List<FeedItem> list = extractItemlistFromCursor(adapter, c);
+            if (list.size() > 0) {
+                successor = list.get(0);
+                loadAdditionalFeedItemListData(list);
+                if (item.hasChapters()) {
+                    loadChaptersOfFeedItem(adapter, item);
+                }
+            }
+        }
+        adapter.close();
+        return successor;
+    }
 
     /**
      * Returns credentials based on image URL
