@@ -393,9 +393,9 @@ public class OnlineFeedViewActivity extends AppCompatActivity {
 
         subscribeButton = (Button) header.findViewById(R.id.butSubscribe);
 
-        if (feed.getImage() != null && StringUtils.isNotBlank(feed.getImage().getDownload_url())) {
+        if (!TextUtils.isEmpty(feed.getImageLocation())) {
             Glide.with(this)
-                    .load(feed.getImage().getDownload_url())
+                    .load(feed.getImageLocation())
                     .placeholder(R.color.light_gray)
                     .error(R.color.light_gray)
                     .diskCacheStrategy(ApGlideSettings.AP_DISK_CACHE_STRATEGY)

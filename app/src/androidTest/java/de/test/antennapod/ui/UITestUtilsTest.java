@@ -38,8 +38,8 @@ public class UITestUtilsTest extends InstrumentationTestCase {
 
         for (Feed feed : feeds) {
             testUrlReachable(feed.getDownload_url());
-            if (feed.getImage() != null) {
-                testUrlReachable(feed.getImage().getDownload_url());
+            if (feed.getImageLocation() != null) {
+                testUrlReachable(feed.getImageLocation());
             }
             for (FeedItem item : feed.getItems()) {
                 if (item.hasMedia()) {
@@ -66,9 +66,6 @@ public class UITestUtilsTest extends InstrumentationTestCase {
 
         for (Feed feed : uiTestUtils.hostedFeeds) {
             assertTrue(feed.getId() != 0);
-            if (feed.getImage() != null) {
-                assertTrue(feed.getImage().getId() != 0);
-            }
             for (FeedItem item : feed.getItems()) {
                 assertTrue(item.getId() != 0);
                 if (item.hasMedia()) {

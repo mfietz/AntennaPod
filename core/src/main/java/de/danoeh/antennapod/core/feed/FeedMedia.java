@@ -7,12 +7,14 @@ import android.media.MediaMetadataRetriever;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
 
 import de.danoeh.antennapod.core.cast.RemoteMedia;
+import de.danoeh.antennapod.core.asynctask.ImageResource;
 import de.danoeh.antennapod.core.preferences.PlaybackPreferences;
 import de.danoeh.antennapod.core.preferences.UserPreferences;
 import de.danoeh.antennapod.core.storage.DBReader;
@@ -21,7 +23,7 @@ import de.danoeh.antennapod.core.storage.PodDBAdapter;
 import de.danoeh.antennapod.core.util.ChapterUtils;
 import de.danoeh.antennapod.core.util.playback.Playable;
 
-public class FeedMedia extends FeedFile implements Playable {
+public class FeedMedia extends FeedFile implements Playable, ImageResource {
     private static final String TAG = "FeedMedia";
 
     public static final int FEEDFILETYPE_FEEDMEDIA = 2;
@@ -553,7 +555,7 @@ public class FeedMedia extends FeedFile implements Playable {
                 hasEmbeddedPicture = Boolean.FALSE;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e(TAG, Log.getStackTraceString(e));
             hasEmbeddedPicture = Boolean.FALSE;
         }
     }

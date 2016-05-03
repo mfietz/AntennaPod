@@ -5,20 +5,16 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.os.Build;
 import android.util.Log;
 
 import org.antennapod.audio.MediaPlayer;
 
 import java.io.File;
-import java.util.List;
 
-import de.danoeh.antennapod.core.feed.Feed;
-import de.danoeh.antennapod.core.feed.FeedImage;
-import de.danoeh.antennapod.core.feed.FeedItem;
 import de.danoeh.antennapod.core.preferences.UserPreferences;
-import de.danoeh.antennapod.core.storage.DBReader;
-import de.danoeh.antennapod.core.storage.DBWriter;
+import de.danoeh.antennapod.core.storage.PodDBAdapter;
 
 /*
  * This class's job is do perform maintenance tasks whenever the app has been updated
@@ -64,26 +60,25 @@ public class UpdateManager {
     }
 
     private static void onUpgrade(final int oldVersionCode, final int newVersionCode) {
-        if(oldVersionCode < 1030099) {
+        if(0 < oldVersionCode && oldVersionCode < 1030099) {
             // delete the now obsolete image cache
             // from now on, Glide will handle caching images
             new Thread() {
                 public void run() {
-                    List<Feed> feeds = DBReader.getFeedList();
-                    for (Feed podcast : feeds) {
-                        List<FeedItem> episodes = DBReader.getFeedItemList(podcast);
-                        for (FeedItem episode : episodes) {
-                            FeedImage image = episode.getImage();
-                            if (image != null && image.isDownloaded() && image.getFile_url() != null) {
-                                File imageFile = new File(image.getFile_url());
-                                if (imageFile.exists()) {
-                                    imageFile.delete();
-                                }
-                                image.setFile_url(null); // calls setDownloaded(false)
-                                DBWriter.setFeedImage(image);
+                    PodDBAdapter adapter = PodDBAdapter.getInstance();
+                    adapter.open();
+                    Cursor c = adapter.getDownloadedImagesCursor();
+                    if(c.moveToFirst()) {
+                        do {
+                            String path = c.getString(0);
+                            File image = new File(path);
+                            if (image.exists()) {
+                                image.delete();
                             }
-                        }
+                        } while(c.moveToNext());
                     }
+                    c.close();
+                    adapter.close();
                 }
             }.start();
         }

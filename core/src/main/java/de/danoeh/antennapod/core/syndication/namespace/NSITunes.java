@@ -7,7 +7,6 @@ import org.xml.sax.Attributes;
 
 import java.util.concurrent.TimeUnit;
 
-import de.danoeh.antennapod.core.feed.FeedImage;
 import de.danoeh.antennapod.core.syndication.handler.HandlerState;
 
 public class NSITunes extends Namespace {
@@ -28,22 +27,16 @@ public class NSITunes extends Namespace {
     @Override
     public SyndElement handleElementStart(String localName, HandlerState state,
                                           Attributes attributes) {
-        if (IMAGE.equals(localName)) {
-            FeedImage image = new FeedImage();
-            image.setTitle(IMAGE_TITLE);
-            image.setDownload_url(attributes.getValue(IMAGE_HREF));
-
-            if (state.getCurrentItem() != null) {
-                // this is an items image
-                image.setTitle(state.getCurrentItem().getTitle() + IMAGE_TITLE);
-                image.setOwner(state.getCurrentItem());
-                state.getCurrentItem().setImage(image);
-            } else {
-                // this is the feed image
-                // prefer to all other images
-                if (!TextUtils.isEmpty(image.getDownload_url())) {
-                    image.setOwner(state.getFeed());
-                    state.getFeed().setImage(image);
+        if (localName.equals(IMAGE)) {
+            String imageUrl = attributes.getValue(IMAGE_HREF);
+            if (!TextUtils.isEmpty(imageUrl)) {
+                if (state.getCurrentItem() != null) {
+                    // this is an items image
+                    state.getCurrentItem().setImageLocation(imageUrl);
+                } else  {
+                    // this is the feed image
+                    // prefer to all other images
+                    state.getFeed().setImageLocation(imageUrl);
                 }
             }
         }

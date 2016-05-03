@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.google.android.gms.cast.MediaInfo;
@@ -40,7 +41,7 @@ public class RemoteMedia implements Playable {
     private String episodeTitle;
     private String episodeLink;
     private String feedAuthor;
-    private String imageUrl;
+    private String imageLocation;
     private String feedLink;
     private String mime_type;
     private Date pubDate;
@@ -52,7 +53,7 @@ public class RemoteMedia implements Playable {
 
     public RemoteMedia(String downloadUrl, String itemId, String feedUrl, String feedTitle,
                        String episodeTitle, String episodeLink, String feedAuthor,
-                       String imageUrl, String feedLink, String mime_type, Date pubDate) {
+                       String imageLocation, String feedLink, String mime_type, Date pubDate) {
         this.downloadUrl = downloadUrl;
         this.itemIdentifier = itemId;
         this.feedUrl = feedUrl;
@@ -60,7 +61,7 @@ public class RemoteMedia implements Playable {
         this.episodeTitle = episodeTitle;
         this.episodeLink = episodeLink;
         this.feedAuthor = feedAuthor;
-        this.imageUrl = imageUrl;
+        this.imageLocation = imageLocation;
         this.feedLink = feedLink;
         this.mime_type = mime_type;
         this.pubDate = pubDate;
@@ -75,8 +76,8 @@ public class RemoteMedia implements Playable {
 
         metadata.putString(MediaMetadata.KEY_TITLE, episodeTitle);
         metadata.putString(MediaMetadata.KEY_SUBTITLE, feedTitle);
-        if (!TextUtils.isEmpty(imageUrl)) {
-            metadata.addImage(new WebImage(Uri.parse(imageUrl)));
+        if (!TextUtils.isEmpty(imageLocation) && imageLocation.startsWith("http")) {
+            metadata.addImage(new WebImage(Uri.parse(imageLocation)));
         }
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(pubDate);
@@ -267,11 +268,9 @@ public class RemoteMedia implements Playable {
     }
 
     @Override
-    public Uri getImageUri() {
-        if (imageUrl != null) {
-            return Uri.parse(imageUrl);
-        }
-        return null;
+    @Nullable
+    public String getImageLocation() {
+        return imageLocation;
     }
 
     @Override
@@ -293,7 +292,7 @@ public class RemoteMedia implements Playable {
         dest.writeString(episodeTitle);
         dest.writeString(episodeLink);
         dest.writeString(feedAuthor);
-        dest.writeString(imageUrl);
+        dest.writeString(imageLocation);
         dest.writeString(feedLink);
         dest.writeString(mime_type);
         dest.writeLong(pubDate.getTime());

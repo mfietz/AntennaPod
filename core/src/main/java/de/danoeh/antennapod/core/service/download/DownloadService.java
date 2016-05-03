@@ -53,7 +53,6 @@ import de.danoeh.antennapod.core.R;
 import de.danoeh.antennapod.core.event.DownloadEvent;
 import de.danoeh.antennapod.core.event.FeedItemEvent;
 import de.danoeh.antennapod.core.feed.Feed;
-import de.danoeh.antennapod.core.feed.FeedImage;
 import de.danoeh.antennapod.core.feed.FeedItem;
 import de.danoeh.antennapod.core.feed.FeedMedia;
 import de.danoeh.antennapod.core.feed.FeedPreferences;
@@ -516,9 +515,7 @@ public class DownloadService extends Service {
             if (status.isSuccessful()) {
                 successfulDownloads++;
             } else if (!status.isCancelled()) {
-                if (status.getFeedfileType() != FeedImage.FEEDFILETYPE_FEEDIMAGE) {
-                    createReport = true;
-                }
+                createReport = true;
                 failedDownloads++;
             }
         }
@@ -709,10 +706,6 @@ public class DownloadService extends Service {
 
                 Log.d(TAG, "Bundling " + results.size() + " feeds");
 
-                for (Pair<DownloadRequest, FeedHandlerResult> result : results) {
-                    removeDuplicateImages(result.second.feed); // duplicate images have to removed because the DownloadRequester does not accept two downloads with the same download URL yet.
-                }
-
                 // Save information of feed in DB
                 if (dbUpdateFuture != null) {
                     try {
@@ -864,26 +857,6 @@ public class DownloadService extends Service {
                 return false;
             }
             return true;
-        }
-
-        /**
-         * Checks if the FeedItems of this feed have images that point
-         * to the same URL. If two FeedItems have an image that points to
-         * the same URL, the reference of the second item is removed, so that every image
-         * reference is unique.
-         */
-        private void removeDuplicateImages(Feed feed) {
-            for (int x = 0; x < feed.getItems().size(); x++) {
-                for (int y = x + 1; y < feed.getItems().size(); y++) {
-                    FeedItem item1 = feed.getItems().get(x);
-                    FeedItem item2 = feed.getItems().get(y);
-                    if (item1.hasItemImage() && item2.hasItemImage()) {
-                        if (TextUtils.equals(item1.getImage().getDownload_url(), item2.getImage().getDownload_url())) {
-                            item2.setImage(null);
-                        }
-                    }
-                }
-            }
         }
 
         private boolean hasValidFeedItems(Feed feed) {

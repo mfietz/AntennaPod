@@ -14,7 +14,6 @@ import java.util.Map;
 
 import de.danoeh.antennapod.core.feed.Chapter;
 import de.danoeh.antennapod.core.feed.Feed;
-import de.danoeh.antennapod.core.feed.FeedImage;
 import de.danoeh.antennapod.core.feed.FeedItem;
 import de.danoeh.antennapod.core.feed.FeedMedia;
 import de.danoeh.antennapod.core.feed.FeedPreferences;
@@ -77,7 +76,7 @@ public final class DBReader {
 
         if (feedlistCursor.moveToFirst()) {
             do {
-                Feed feed = extractFeedFromCursorRow(adapter, feedlistCursor);
+                Feed feed = extractFeedFromCursorRow(feedlistCursor);
                 feeds.add(feed);
             } while (feedlistCursor.moveToNext());
         }
@@ -167,8 +166,7 @@ public final class DBReader {
         adapter.open();
 
         Cursor itemlistCursor = adapter.getAllItemsOfFeedCursor(feed);
-        List<FeedItem> items = extractItemlistFromCursor(adapter,
-                itemlistCursor);
+        List<FeedItem> items = extractItemlistFromCursor(adapter, itemlistCursor);
         itemlistCursor.close();
         adapter.close();
 
@@ -194,25 +192,16 @@ public final class DBReader {
                                                             Cursor cursor) {
         List<FeedItem> result = new ArrayList<>(cursor.getCount());
 
-        LongList imageIds = new LongList(cursor.getCount());
         LongList itemIds = new LongList(cursor.getCount());
         if (cursor.moveToFirst()) {
             do {
-                int indexImage = cursor.getColumnIndex(PodDBAdapter.KEY_IMAGE);
-                long imageId = cursor.getLong(indexImage);
-                imageIds.add(imageId);
-
                 FeedItem item = FeedItem.fromCursor(cursor);
                 result.add(item);
                 itemIds.add(item.getId());
             } while (cursor.moveToNext());
-            Map<Long,FeedImage> images = getFeedImages(adapter, imageIds.toArray());
             Map<Long,FeedMedia> medias = getFeedMedia(adapter, itemIds.toArray());
             for(int i=0; i < result.size(); i++) {
                 FeedItem item = result.get(i);
-                long imageId = imageIds.get(i);
-                FeedImage image = images.get(imageId);
-                item.setImage(image);
                 FeedMedia media = medias.get(item.getId());
                 item.setMedia(media);
                 if(media != null) {
@@ -247,22 +236,8 @@ public final class DBReader {
         return result;
     }
 
-    private static Feed extractFeedFromCursorRow(PodDBAdapter adapter,
-                                                 Cursor cursor) {
-        final FeedImage image;
-        int indexImage = cursor.getColumnIndex(PodDBAdapter.KEY_IMAGE);
-        long imageId = cursor.getLong(indexImage);
-        if (imageId != 0) {
-            image = getFeedImage(adapter, imageId);
-        } else {
-            image = null;
-        }
-
+    private static Feed extractFeedFromCursorRow(Cursor cursor) {
         Feed feed = Feed.fromCursor(cursor);
-        if (image != null) {
-            feed.setImage(image);
-            image.setOwner(feed);
-        }
 
         FeedPreferences preferences = FeedPreferences.fromCursor(cursor);
         feed.setPreferences(preferences);
@@ -577,7 +552,7 @@ public final class DBReader {
 
         Cursor feedCursor = adapter.getFeedCursor(feedId);
         if (feedCursor.moveToFirst()) {
-            feed = extractFeedFromCursorRow(adapter, feedCursor);
+            feed = extractFeedFromCursorRow(feedCursor);
             feed.setItems(getFeedItemList(feed));
         } else {
             Log.e(TAG, "getFeed could not find feed with id " + feedId);
@@ -838,58 +813,6 @@ public final class DBReader {
     }
 
     /**
-     * Searches the DB for a FeedImage of the given id.
-     *
-     * @param imageId The id of the object
-     * @return The found object
-     */
-    public static FeedImage getFeedImage(final long imageId) {
-        Log.d(TAG, "getFeedImage() called with: " + "imageId = [" + imageId + "]");
-        PodDBAdapter adapter = PodDBAdapter.getInstance();
-        adapter.open();
-        FeedImage result = getFeedImage(adapter, imageId);
-        adapter.close();
-        return result;
-    }
-
-    /**
-     * Searches the DB for a FeedImage of the given id.
-     *
-     * @param imageId The id of the object
-     * @return The found object
-     */
-    private static FeedImage getFeedImage(PodDBAdapter adapter, final long imageId) {
-        return getFeedImages(adapter, imageId).get(imageId);
-    }
-
-    /**
-     * Searches the DB for a FeedImage of the given id.
-     *
-     * @param imageIds The ids of the images
-     * @return Map that associates the id of an image with the image itself
-     */
-    private static Map<Long,FeedImage> getFeedImages(PodDBAdapter adapter, final long... imageIds) {
-        String[] ids = new String[imageIds.length];
-        for(int i=0, len=imageIds.length; i < len; i++) {
-            ids[i] = String.valueOf(imageIds[i]);
-        }
-        Cursor cursor = adapter.getImageCursor(ids);
-        Map<Long, FeedImage> result = new ArrayMap<>(cursor.getCount());
-        try {
-            if ((cursor.getCount() == 0) || !cursor.moveToFirst()) {
-                return Collections.emptyMap();
-            }
-            do {
-                FeedImage image = FeedImage.fromCursor(cursor);
-                result.put(image.getId(), image);
-            } while(cursor.moveToNext());
-        } finally {
-            cursor.close();
-        }
-        return result;
-    }
-
-    /**
      * Searches the DB for a FeedMedia of the given id.
      *
      * @param mediaId The id of the object
@@ -1017,7 +940,7 @@ public final class DBReader {
         Cursor feedCursor = adapter.getFeedsInFlattrQueueCursor();
         if (feedCursor.moveToFirst()) {
             do {
-                result.add(extractFeedFromCursorRow(adapter, feedCursor));
+                result.add(extractFeedFromCursorRow(feedCursor));
             } while (feedCursor.moveToNext());
         }
         feedCursor.close();

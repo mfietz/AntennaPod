@@ -42,7 +42,9 @@ public class Feed extends FeedFile implements FlattrThing, ImageResource {
      * Name of the author
      */
     private String author;
-    private FeedImage image;
+
+    // URL of the image or path of a media file containing an image
+    private String imageLocation;
     private List<FeedItem> items;
 
     /**
@@ -94,7 +96,7 @@ public class Feed extends FeedFile implements FlattrThing, ImageResource {
      * This constructor is used for restoring a feed from the database.
      */
     public Feed(long id, String lastUpdate, String title, String link, String description, String paymentLink,
-                String author, String language, String type, String feedIdentifier, FeedImage image, String fileUrl,
+                String author, String language, String type, String feedIdentifier, String imageLocation, String fileUrl,
                 String downloadUrl, boolean downloaded, FlattrStatus status, boolean paged, String nextPageLink,
                 String filter, boolean lastUpdateFailed) {
         super(fileUrl, downloadUrl, downloaded);
@@ -108,7 +110,7 @@ public class Feed extends FeedFile implements FlattrThing, ImageResource {
         this.language = language;
         this.type = type;
         this.feedIdentifier = feedIdentifier;
-        this.image = image;
+        this.imageLocation = imageLocation;
         this.flattrStatus = status;
         this.paged = paged;
         this.nextPageLink = nextPageLink;
@@ -125,9 +127,9 @@ public class Feed extends FeedFile implements FlattrThing, ImageResource {
      * This constructor is used for test purposes and uses a default flattr status object.
      */
     public Feed(long id, String lastUpdate, String title, String link, String description, String paymentLink,
-                String author, String language, String type, String feedIdentifier, FeedImage image, String fileUrl,
+                String author, String language, String type, String feedIdentifier, String imageLocation, String fileUrl,
                 String downloadUrl, boolean downloaded) {
-        this(id, lastUpdate, title, link, description, paymentLink, author, language, type, feedIdentifier, image,
+        this(id, lastUpdate, title, link, description, paymentLink, author, language, type, feedIdentifier, imageLocation,
                 fileUrl, downloadUrl, downloaded, new FlattrStatus(), false, null, null, false);
     }
 
@@ -187,6 +189,7 @@ public class Feed extends FeedFile implements FlattrThing, ImageResource {
         int indexNextPageLink = cursor.getColumnIndex(PodDBAdapter.KEY_NEXT_PAGE_LINK);
         int indexHide = cursor.getColumnIndex(PodDBAdapter.KEY_HIDE);
         int indexLastUpdateFailed = cursor.getColumnIndex(PodDBAdapter.KEY_LAST_UPDATE_FAILED);
+        int indexImageUrl = cursor.getColumnIndex(PodDBAdapter.KEY_IMAGE_URL);
 
         Feed feed = new Feed(
                 cursor.getLong(indexId),
@@ -199,7 +202,7 @@ public class Feed extends FeedFile implements FlattrThing, ImageResource {
                 cursor.getString(indexLanguage),
                 cursor.getString(indexType),
                 cursor.getString(indexFeedIdentifier),
-                null,
+                cursor.getString(indexImageUrl),
                 cursor.getString(indexFileUrl),
                 cursor.getString(indexDownloadUrl),
                 cursor.getInt(indexDownloaded) > 0,
@@ -408,12 +411,13 @@ public class Feed extends FeedFile implements FlattrThing, ImageResource {
         this.description = description;
     }
 
-    public FeedImage getImage() {
-        return image;
+    @Override
+    public String getImageLocation() {
+        return imageLocation;
     }
 
-    public void setImage(FeedImage image) {
-        this.image = image;
+    public void setImageLocation(String imageUrl) {
+        this.imageLocation = imageUrl;
     }
 
     public List<FeedItem> getItems() {
@@ -497,15 +501,6 @@ public class Feed extends FeedFile implements FlattrThing, ImageResource {
         super.setId(id);
         if (preferences != null) {
             preferences.setFeedID(id);
-        }
-    }
-
-    @Override
-    public String getImageLocation() {
-        if (image != null) {
-            return image.getImageLocation();
-        } else {
-            return null;
         }
     }
 

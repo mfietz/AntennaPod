@@ -24,7 +24,8 @@ import de.danoeh.antennapod.core.util.flattr.FlattrThing;
  *
  * @author daniel
  */
-public class FeedItem extends FeedComponent implements ShownotesProvider, FlattrThing, ImageResource {
+public class FeedItem extends FeedComponent implements ShownotesProvider, FlattrThing,
+        ImageResource {
 
     /** tag that indicates this item is in the queue */
     public static final String TAG_QUEUE = "Queue";
@@ -73,7 +74,9 @@ public class FeedItem extends FeedComponent implements ShownotesProvider, Flattr
      * in the database. The 'hasChapters' attribute should be used to check if this item has any chapters.
      * */
     private List<Chapter> chapters;
-    private FeedImage image;
+
+    // URL of the image or path of a media file containing an image
+    private String imageLocation;
 
     /*
      *   0: auto download disabled
@@ -98,7 +101,7 @@ public class FeedItem extends FeedComponent implements ShownotesProvider, Flattr
      * This constructor is used by DBReader.
      * */
     public FeedItem(long id, String title, String link, Date pubDate, String paymentLink, long feedId,
-                    FlattrStatus flattrStatus, boolean hasChapters, FeedImage image, int state,
+                    FlattrStatus flattrStatus, boolean hasChapters, String imageLocation, int state,
                     String itemIdentifier, long autoDownload) {
         this.id = id;
         this.title = title;
@@ -108,7 +111,7 @@ public class FeedItem extends FeedComponent implements ShownotesProvider, Flattr
         this.feedId = feedId;
         this.flattrStatus = flattrStatus;
         this.hasChapters = hasChapters;
-        this.image = image;
+        this.imageLocation = imageLocation;
         this.state = state;
         this.itemIdentifier = itemIdentifier;
         this.autoDownload = autoDownload;
@@ -208,8 +211,8 @@ public class FeedItem extends FeedComponent implements ShownotesProvider, Flattr
                 chapters = other.chapters;
             }
         }
-        if (image == null) {
-            image = other.image;
+        if (imageLocation == null) {
+            imageLocation = other.imageLocation;
         }
     }
 
@@ -376,8 +379,8 @@ public class FeedItem extends FeedComponent implements ShownotesProvider, Flattr
     public String getImageLocation() {
         if(media != null && media.hasEmbeddedPicture()) {
             return media.getImageLocation();
-        } else if (image != null) {
-           return image.getImageLocation();
+        } else if (imageLocation != null) {
+           return imageLocation;
         } else if (feed != null) {
             return feed.getImageLocation();
         } else {
@@ -409,33 +412,15 @@ public class FeedItem extends FeedComponent implements ShownotesProvider, Flattr
         this.feedId = feedId;
     }
 
-    /**
-     * Returns the image of this item or the image of the feed if this item does
-     * not have its own image.
-     */
-    public FeedImage getImage() {
-        return (hasItemImage()) ? image : feed.getImage();
-    }
-
-    public void setImage(FeedImage image) {
-        this.image = image;
-        if (image != null) {
-            image.setOwner(this);
-        }
+    public void setImageLocation(String location) {
+        this.imageLocation = location;
     }
 
     /**
      * Returns true if this FeedItem has its own image, false otherwise.
      */
-    public boolean hasItemImage() {
-        return image != null;
-    }
-
-    /**
-     * Returns true if this FeedItem has its own image and the image has been downloaded.
-     */
-    public boolean hasItemImageDownloaded() {
-        return image != null && image.isDownloaded();
+    public boolean hasImage() {
+        return imageLocation != null;
     }
 
     @Override

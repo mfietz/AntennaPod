@@ -17,7 +17,6 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import de.danoeh.antennapod.core.feed.Chapter;
 import de.danoeh.antennapod.core.feed.Feed;
-import de.danoeh.antennapod.core.feed.FeedImage;
 import de.danoeh.antennapod.core.feed.FeedItem;
 import de.danoeh.antennapod.core.feed.FeedMedia;
 import de.danoeh.antennapod.core.syndication.handler.FeedHandler;
@@ -83,13 +82,12 @@ public class FeedHandlerTest extends InstrumentationTestCase {
         assertEquals(feed.getDescription(), parsedFeed.getDescription());
         assertEquals(feed.getPaymentLink(), parsedFeed.getPaymentLink());
 
-        if (feed.getImage() != null) {
-            FeedImage image = feed.getImage();
-            FeedImage parsedImage = parsedFeed.getImage();
-            assertNotNull(parsedImage);
+        if (feed.getImageLocation() != null) {
+            String imageUrl = feed.getImageLocation();
+            String parsedImageUrl = parsedFeed.getImageLocation();
+            assertNotNull(parsedImageUrl);
 
-            assertEquals(image.getTitle(), parsedImage.getTitle());
-            assertEquals(image.getDownload_url(), parsedImage.getDownload_url());
+            assertEquals(imageUrl, parsedImageUrl);
         }
 
         if (feed.getItems() != null) {
@@ -119,13 +117,12 @@ public class FeedHandlerTest extends InstrumentationTestCase {
                     assertEquals(media.getMime_type(), parsedMedia.getMime_type());
                 }
 
-                if (item.hasItemImage()) {
-                    assertTrue(parsedItem.hasItemImage());
-                    FeedImage image = item.getImage();
-                    FeedImage parsedImage = parsedItem.getImage();
+                if (item.hasImage()) {
+                    assertTrue(parsedItem.hasImage());
+                    String imageUrl = item.getImageLocation();
+                    String parsedImageUrl = parsedItem.getImageLocation();
 
-                    assertEquals(image.getTitle(), parsedImage.getTitle());
-                    assertEquals(image.getDownload_url(), parsedImage.getDownload_url());
+                    assertEquals(imageUrl, parsedImageUrl);
                 }
 
                 if (item.getChapters() != null) {
@@ -158,13 +155,13 @@ public class FeedHandlerTest extends InstrumentationTestCase {
     }
 
     private Feed createTestFeed(int numItems, boolean withImage, boolean withFeedMedia, boolean withChapters) {
-        FeedImage image = null;
+        String imageUrl = null;
         if (withImage) {
-            image = new FeedImage(0, "image", null, "http://example.com/picture", false);
+            imageUrl = "http://example.com/picture";
         }
         Feed feed = new Feed(0, null, "title", "http://example.com", "This is the description",
-                "http://example.com/payment", "Daniel", "en", null, "http://example.com/feed", image, file.getAbsolutePath(),
-                "http://example.com/feed", true);
+                "http://example.com/payment", "Daniel", "en", null, "http://example.com/feed",
+                imageUrl, file.getAbsolutePath(), "http://example.com/feed", true);
         feed.setItems(new ArrayList<FeedItem>());
 
         for (int i = 0; i < numItems; i++) {

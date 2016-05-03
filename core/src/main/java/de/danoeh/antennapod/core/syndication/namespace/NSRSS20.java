@@ -5,8 +5,6 @@ import android.util.Log;
 
 import org.xml.sax.Attributes;
 
-import de.danoeh.antennapod.core.feed.Feed;
-import de.danoeh.antennapod.core.feed.FeedImage;
 import de.danoeh.antennapod.core.feed.FeedItem;
 import de.danoeh.antennapod.core.feed.FeedMedia;
 import de.danoeh.antennapod.core.syndication.handler.HandlerState;
@@ -73,18 +71,6 @@ public class NSRSS20 extends Namespace {
 				state.getCurrentItem().setMedia(
 						new FeedMedia(state.getCurrentItem(), url, size, type));
 			}
-
-		} else if (IMAGE.equals(localName)) {
-			if (state.getTagstack().size() >= 1) {
-				String parent = state.getTagstack().peek().getName();
-				if (CHANNEL.equals(parent)) {
-					Feed feed = state.getFeed();
-					if(feed != null && feed.getImage() == null) {
-						feed.setImage(new FeedImage());
-						feed.getImage().setOwner(state.getFeed());
-					}
-				}
-			}
 		}
 		return new SyndElement(localName, this);
 	}
@@ -100,7 +86,6 @@ public class NSRSS20 extends Namespace {
 				if (currentItem.getTitle() == null) {
 					currentItem.setTitle(currentItem.getDescription());
 				}
-
                 if (state.getTempObjects().containsKey(NSITunes.DURATION)) {
                     if (currentItem.hasMedia()) {
 						Integer duration = (Integer) state.getTempObjects().get(NSITunes.DURATION);
@@ -131,11 +116,6 @@ public class NSRSS20 extends Namespace {
 					state.getCurrentItem().setTitle(title);
 				} else if (CHANNEL.equals(second) && state.getFeed() != null) {
 					state.getFeed().setTitle(title);
-				} else if (IMAGE.equals(second) && CHANNEL.equals(third)) {
-					if(state.getFeed() != null && state.getFeed().getImage() != null &&
-						state.getFeed().getImage().getTitle() == null) {
-						state.getFeed().getImage().setTitle(title);
-					}
 				}
 			} else if (LINK.equals(top)) {
 				if (CHANNEL.equals(second) && state.getFeed() != null) {
@@ -147,9 +127,8 @@ public class NSRSS20 extends Namespace {
 				state.getCurrentItem().setPubDate(DateUtils.parse(content));
 			} else if (URL.equals(top) && IMAGE.equals(second) && CHANNEL.equals(third)) {
 				// prefer itunes:image
-				if(state.getFeed() != null && state.getFeed().getImage() != null &&
-					state.getFeed().getImage().getDownload_url() == null) {
-					state.getFeed().getImage().setDownload_url(content);
+				if(state.getFeed() != null && state.getFeed().getImageLocation() == null) {
+					state.getFeed().setImageLocation(content);
 				}
 			} else if (DESCR.equals(localName)) {
 				if (CHANNEL.equals(second) && state.getFeed() != null) {
