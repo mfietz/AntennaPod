@@ -300,9 +300,9 @@ public class QueueRecyclerAdapter extends RecyclerView.Adapter<QueueRecyclerAdap
                 .diskCacheStrategy(ApGlideSettings.AP_DISK_CACHE_STRATEGY)
                 .fitCenter()
                 .dontAnimate()
-                .into(new CoverTarget(item.getFeed().getImageLocation(), placeholder, cover, mainActivity.get()));
+                .into(new CoverTarget(item.getFeed().getImageLocation(), placeholder, cover,
+                        mainActivity.get()));
         }
-
     }
 
     private View.OnClickListener secondaryActionListener = new View.OnClickListener() {

@@ -527,30 +527,20 @@ public class DownloadService extends Service {
             Log.d(TAG, "Creating report");
             // create notification object
             Notification notification = new NotificationCompat.Builder(this)
-                    .setTicker(
-                            getString(R.string.download_report_title))
-                    .setContentTitle(
-                            getString(R.string.download_report_content_title))
-                    .setContentText(
-                            String.format(
-                                    getString(R.string.download_report_content),
-                                    successfulDownloads, failedDownloads)
-                    )
+                    .setTicker(getString(R.string.download_report_title))
+                    .setContentTitle(getString(R.string.download_report_content_title))
+                    .setContentText(String.format(getString(R.string.download_report_content),
+                            successfulDownloads, failedDownloads))
                     .setSmallIcon(R.drawable.stat_notify_sync_error)
-                    .setLargeIcon(
-                            BitmapFactory.decodeResource(getResources(),
-                                    R.drawable.stat_notify_sync_error)
-                    )
+                    .setLargeIcon(BitmapFactory.decodeResource(getResources(),
+                            R.drawable.stat_notify_sync_error))
                     .setContentIntent(
-                            ClientConfig.downloadServiceCallbacks.getReportNotificationContentIntent(this)
-                    )
+                            ClientConfig.downloadServiceCallbacks.getReportNotificationContentIntent(this))
                     .setAutoCancel(true)
                     .setVisibility(Notification.VISIBILITY_PUBLIC)
                     .build();
             NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             nm.notify(REPORT_ID, notification);
-        } else {
-            Log.d(TAG, "No report is created");
         }
         reportQueue.clear();
     }

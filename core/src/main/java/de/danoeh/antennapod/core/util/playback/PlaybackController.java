@@ -212,7 +212,7 @@ public abstract class PlaybackController {
                 activity.getApplicationContext());
         long currentlyPlayingMedia = PlaybackPreferences.getCurrentlyPlayingMedia();
         if (currentlyPlayingMedia != PlaybackPreferences.NO_MEDIA_PLAYING) {
-            Playable media = PlayableUtils.createInstanceFromPreferences(activity,
+            Playable media = PlayableUtils.createInstanceFromPreferences(
                     (int) currentlyPlayingMedia, prefs);
             if (media != null) {
                 Intent serviceIntent = new Intent(activity, PlaybackService.class);

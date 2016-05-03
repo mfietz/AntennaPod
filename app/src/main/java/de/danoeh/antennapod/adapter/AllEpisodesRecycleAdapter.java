@@ -204,7 +204,8 @@ public class AllEpisodesRecycleAdapter extends RecyclerView.Adapter<AllEpisodesR
                 .diskCacheStrategy(ApGlideSettings.AP_DISK_CACHE_STRATEGY)
                 .fitCenter()
                 .dontAnimate()
-                .into(new CoverTarget(item.getFeed().getImageLocation(), holder.placeholder, holder.cover, mainActivityRef.get()));
+                .into(new CoverTarget(item.getFeed().getImageLocation(), holder.placeholder,
+                        holder.cover, mainActivityRef.get()));
     }
 
     @Override

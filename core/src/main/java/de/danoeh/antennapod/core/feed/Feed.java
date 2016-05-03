@@ -21,6 +21,7 @@ import de.danoeh.antennapod.core.util.flattr.FlattrThing;
  * @author daniel
  */
 public class Feed extends FeedFile implements FlattrThing, ImageResource {
+
     public static final int FEEDFILETYPE_FEED = 0;
     public static final String TYPE_RSS2 = "rss";
     public static final String TYPE_RSS091 = "rss";

@@ -72,13 +72,11 @@ public class ExternalMedia implements Playable {
 			mmr.setDataSource(source);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
-			throw new PlayableException(
-					"IllegalArgumentException when setting up MediaMetadataReceiver");
+			throw new PlayableException("IllegalArgumentException when setting up MediaMetadataReceiver");
 		} catch (RuntimeException e) {
 			// http://code.google.com/p/android/issues/detail?id=39770
 			e.printStackTrace();
-			throw new PlayableException(
-					"RuntimeException when setting up MediaMetadataRetriever");
+			throw new PlayableException("RuntimeException when setting up MediaMetadataRetriever");
 		}
 		episodeTitle = mmr
 				.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);

@@ -28,15 +28,12 @@ public class AudioplayerActivity extends MediaplayerInfoActivity {
         if (TextUtils.equals(getIntent().getAction(), Intent.ACTION_VIEW)) {
             Intent intent = getIntent();
             Log.d(TAG, "Received VIEW intent: " + intent.getData().getPath());
-            ExternalMedia media = new ExternalMedia(intent.getData().getPath(),
-                    MediaType.AUDIO);
+            ExternalMedia media = new ExternalMedia(intent.getData().getPath(), MediaType.AUDIO);
             Intent launchIntent = new Intent(this, PlaybackService.class);
             launchIntent.putExtra(PlaybackService.EXTRA_PLAYABLE, media);
-            launchIntent.putExtra(PlaybackService.EXTRA_START_WHEN_PREPARED,
-                    true);
+            launchIntent.putExtra(PlaybackService.EXTRA_START_WHEN_PREPARED, true);
             launchIntent.putExtra(PlaybackService.EXTRA_SHOULD_STREAM, false);
-            launchIntent.putExtra(PlaybackService.EXTRA_PREPARE_IMMEDIATELY,
-                    true);
+            launchIntent.putExtra(PlaybackService.EXTRA_PREPARE_IMMEDIATELY, true);
             startService(launchIntent);
         } else if (PlaybackService.isCasting()) {
             Intent intent = PlaybackService.getPlayerActivityIntent(this);

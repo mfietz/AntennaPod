@@ -1,6 +1,5 @@
 package de.danoeh.antennapod.core.util.playback;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Parcelable;
 import android.util.Log;
@@ -18,8 +17,7 @@ import de.danoeh.antennapod.core.util.ShownotesProvider;
 /**
  * Interface for objects that can be played by the PlaybackService.
  */
-public interface Playable extends Parcelable,
-        ShownotesProvider, ImageResource {
+public interface Playable extends Parcelable, ShownotesProvider, ImageResource {
 
     /**
      * Save information about the playable in a preference so that it can be
@@ -173,8 +171,7 @@ public interface Playable extends Parcelable,
          *             is restored
          * @return The restored Playable object
          */
-        public static Playable createInstanceFromPreferences(Context context, int type,
-                                                             SharedPreferences pref) {
+        static Playable createInstanceFromPreferences(int type, SharedPreferences pref) {
             Playable result = null;
             // ADD new Playable types here:
             switch (type) {
@@ -226,19 +223,19 @@ public interface Playable extends Parcelable,
     class PlayableException extends Exception {
         private static final long serialVersionUID = 1L;
 
-        public PlayableException() {
+        PlayableException() {
             super();
         }
 
-        public PlayableException(String detailMessage, Throwable throwable) {
+        PlayableException(String detailMessage, Throwable throwable) {
             super(detailMessage, throwable);
         }
 
-        public PlayableException(String detailMessage) {
+        PlayableException(String detailMessage) {
             super(detailMessage);
         }
 
-        public PlayableException(Throwable throwable) {
+        PlayableException(Throwable throwable) {
             super(throwable);
         }
 
