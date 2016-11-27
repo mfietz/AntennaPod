@@ -126,7 +126,11 @@ dependencies {
     } else {
         System.out.println("app: free build hack, skipping some dependencies")
     }
-    compile "com.android.support:support-v4:$supportVersion"
+//    compile "com.android.support:support-v4:$supportVersion"
+    compile "com.android.support:support-compat:$supportVersion"
+    compile "com.android.support:support-core-utils:$supportVersion"
+    compile "com.android.support:support-media-compat:$supportVersion"
+    compile "com.android.support:support-fragment:$supportVersion"
     compile "com.android.support:appcompat-v7:$supportVersion"
     compile "com.android.support:design:$supportVersion"
     compile "com.android.support:gridlayout-v7:$supportVersion"
