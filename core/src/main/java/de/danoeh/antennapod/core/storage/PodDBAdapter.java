@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.media.MediaMetadataRetriever;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -1285,7 +1286,7 @@ public class PodDBAdapter {
                 TABLE_NAME_FEEDS,
                 TABLE_NAME_FEED_ITEMS + "." + KEY_FEED + "=" + TABLE_NAME_FEEDS + "." + KEY_ID,
                 TABLE_NAME_FEED_ITEMS + "." + KEY_READ + "=" + FeedItem.NEW + " AND " + TABLE_NAME_FEEDS + "." + KEY_KEEP_UPDATED + " > 0",
-                KEY_PUBDATE + " DESC"
+                sortByNewnessAndFeedPosition()
         };
         final String query = String.format("SELECT %s FROM %s INNER JOIN %s ON %s WHERE %s ORDER BY %s", args);
         return db.rawQuery(query, null);
@@ -1361,6 +1362,11 @@ public class PodDBAdapter {
             return db.query(TABLE_NAME_FEED_MEDIA, null, KEY_FEEDITEM + " IN "
                     + buildInOperator(length), itemIds, null, null, null);
         }
+    }
+
+    @NonNull
+    private String sortByNewnessAndFeedPosition() {
+        return TABLE_NAME_FEED_ITEMS + "." + KEY_PUBDATE + " DESC, " + TABLE_NAME_FEED_ITEMS + "." + KEY_ID + " ASC";
     }
 
     /**

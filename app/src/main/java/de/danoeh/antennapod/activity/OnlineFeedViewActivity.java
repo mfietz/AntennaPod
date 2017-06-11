@@ -514,7 +514,7 @@ public class OnlineFeedViewActivity extends AppCompatActivity {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(R.string.error_label);
             if (errorMsg != null) {
-                builder.setMessage(getString(R.string.error_msg_prefix) + errorMsg);
+                builder.setMessage(getString(R.string.error_msg_prefix) + "\n" + errorMsg);
             } else {
                 builder.setMessage(R.string.error_msg_prefix);
             }
