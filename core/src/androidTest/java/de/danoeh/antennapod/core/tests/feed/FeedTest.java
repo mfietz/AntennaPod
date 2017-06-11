@@ -1,9 +1,9 @@
-package de.danoeh.antennapod.core.feed;
+package de.danoeh.antennapod.core.tests.feed;
 
 import android.test.AndroidTestCase;
 
-import static de.danoeh.antennapod.core.feed.FeedImageMother.anyFeedImage;
-import static de.danoeh.antennapod.core.feed.FeedMother.anyFeed;
+import de.danoeh.antennapod.core.feed.Feed;
+import de.danoeh.antennapod.core.feed.FeedImage;
 
 public class FeedTest extends AndroidTestCase {
 
@@ -13,9 +13,9 @@ public class FeedTest extends AndroidTestCase {
 
     @Override
     protected void setUp() {
-        original = anyFeed();
+        original = FeedMother.anyFeed();
         originalImage = original.getImage();
-        changedFeed = anyFeed();
+        changedFeed = FeedMother.anyFeed();
     }
 
     public void testCompareWithOther_feedImageDownloadUrlChanged() throws Exception {
@@ -25,7 +25,7 @@ public class FeedTest extends AndroidTestCase {
     }
 
     public void testCompareWithOther_sameFeedImage() throws Exception {
-        changedFeed.setImage(anyFeedImage());
+        changedFeed.setImage(FeedImageMother.anyFeedImage());
 
         feedHasNotChanged();
     }
